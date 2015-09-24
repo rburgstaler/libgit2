@@ -641,7 +641,7 @@ static int load_config(
 		return error;
 
 	error = git_buf_joinpath(
-		&config_path, repo->path_repository, GIT_CONFIG_FILENAME_INREPO);
+		&config_path, repo->commondir, GIT_CONFIG_FILENAME_INREPO);
 	if (error < 0)
 		goto on_error;
 
