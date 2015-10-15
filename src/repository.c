@@ -250,6 +250,7 @@ int git_repository_new(git_repository **out)
 	GITERR_CHECK_ALLOC(repo);
 
 	repo->is_bare = 1;
+	repo->is_worktree = 0;
 
 	return 0;
 }
@@ -554,6 +555,7 @@ int git_repository_open_bare(
 
 	/* of course we're bare! */
 	repo->is_bare = 1;
+	repo->is_worktree = 0;
 	repo->workdir = NULL;
 
 	*repo_ptr = repo;
@@ -767,6 +769,9 @@ int git_repository_open_ext(
 		repo->commondir = git_buf_detach(&common_path);
 		GITERR_CHECK_ALLOC(repo->commondir);
 	}
+
+	if (repo->path_gitlink && repo->commondir && strcmp(repo->path_gitlink, repo->commondir))
+		repo->is_worktree = 1;
 
 	/*
 	 * We'd like to have the config, but git doesn't particularly
@@ -2180,6 +2185,12 @@ int git_repository_is_bare(git_repository *repo)
 {
 	assert(repo);
 	return repo->is_bare;
+}
+
+int git_repository_is_worktree(git_repository *repo)
+{
+	assert(repo);
+	return repo->is_worktree;
 }
 
 int git_repository_set_bare(git_repository *repo)
