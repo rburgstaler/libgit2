@@ -355,6 +355,34 @@ extern int git_path_walk_up(
 enum { GIT_PATH_NOTEQUAL = 0, GIT_PATH_EQUAL = 1, GIT_PATH_PREFIX = 2 };
 
 /*
+ * Determines if a path is equal to another, stripping slashes.
+ * @param p1 First path
+ * @param p2 Second path
+ */
+GIT_INLINE(int) git_path_equal(
+	const char *p1,
+	const char *p2)
+{
+	assert(p1 && p2);
+
+	/* Root has to be equal */
+	if (*p1 != *p2)
+		return false;
+
+	for (; *p1 || *p2; p1++, p2++) {
+		if (!*p1 && *p2 == '/')
+			while (*p2 == '/') p2++;
+		if (!*p2 && *p1 == '/')
+			while (*p1 == '/') p1++;
+
+		if (*p1 != *p2 || !*p1 || !*p2)
+			break;
+	}
+
+	return *p1 == '\0' && *p2 == '\0';
+}
+
+/*
  * Determines if a path is equal to or potentially a child of another.
  * @param parent The possible parent
  * @param child The possible child
