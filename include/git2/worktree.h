@@ -124,6 +124,32 @@ GIT_EXTERN(int) git_worktree_unlock(git_worktree *wt);
  */
 GIT_EXTERN(int) git_worktree_is_locked(git_buf *reason, const git_worktree *wt);
 
+enum {
+	/* Actually remove files */
+	GIT_WORKTREE_PRUNE_FORCE = 1u << 0,
+	/* Prune working tree even if working tree is valid */
+	GIT_WORKTREE_PRUNE_VALID = 1u << 1,
+	/* Prune working tree even if it is locked */
+	GIT_WORKTREE_PRUNE_LOCKED = 1u << 2,
+	/* Prune checked out working tree */
+	GIT_WORKTREE_PRUNE_WORKING_TREE = 1u << 3,
+};
+
+/**
+ * Prune working tree
+ *
+ * Prune the working tree, that is remove the git data
+ * structures. By default, working trees having a connected
+ * working copy present will not be deleted. This behavior can be
+ * changed by passing the flag `GIT_WORKTREE_PRUNE_FORCE`, which
+ * will also cause the working tree to be deleted.
+ *
+ * @param wt Worktree to prune
+ * @param flags Flags from `GIT_WORKTREE_PRUNE`
+ * @return 0 or an error code
+ */
+GIT_EXTERN(int) git_worktree_prune(git_worktree *wt, unsigned flags);
+
 /** @} */
 GIT_END_DECL
 #endif
