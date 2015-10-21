@@ -133,6 +133,41 @@ out:
 	return error;
 }
 
+int git_worktree_open(git_repository **out, git_worktree *wt)
+{
+	git_buf path = GIT_BUF_INIT;
+	git_repository *repo = NULL;
+	int len, err;
+
+	assert(out && wt);
+
+	*out = NULL;
+	len = strlen(wt->gitlink_path);
+
+	if (len <= 4 &&
+		wt->gitlink_path[len - 4] != '.' &&
+		wt->gitlink_path[len - 4] != 'g' &&
+		wt->gitlink_path[len - 4] != 'i' &&
+		wt->gitlink_path[len - 4] != 't')
+	{
+		err = -1;
+		goto out;
+	}
+
+	if ((err = git_buf_set(&path, wt->gitlink_path, len - 4)) < 0)
+		goto out;
+
+	if ((err = git_repository_open(&repo, path.ptr)) < 0)
+		goto out;
+
+	*out = repo;
+
+out:
+	git_buf_free(&path);
+
+	return err;
+}
+
 void git_worktree_free(git_worktree *wt)
 {
 	if (!wt)

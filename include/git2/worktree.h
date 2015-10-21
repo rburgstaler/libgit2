@@ -43,6 +43,18 @@ GIT_EXTERN(int) git_worktree_list(git_strarray *out, git_repository *repo);
 GIT_EXTERN(int) git_worktree_lookup(git_worktree **out, git_repository *repo, const char *name);
 
 /**
+ * Open working tree as a repository
+ *
+ * Open the working directory of the working tree as a normal
+ * repository that can then be worked on.
+ *
+ * @param out Output pointer containing opened repository
+ * @param wt Working tree to open
+ * @return 0 or an error code
+ */
+GIT_EXTERN(int) git_worktree_open(git_repository **out, git_worktree *wt);
+
+/**
  * Free a previously allocated worktree
  *
  * @param wt worktree handle to close. If NULL nothing occurs.
