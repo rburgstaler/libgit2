@@ -1,6 +1,7 @@
 #include "clar_libgit2.h"
 #include "worktree_helpers.h"
 
+#include "checkout.h"
 #include "repository.h"
 #include "worktree.h"
 
@@ -315,6 +316,32 @@ void test_worktree_worktree__validate_invalid_parent(void)
 
 	wt->parent_path = NULL;
 	git_worktree_free(wt);
+}
+
+void test_worktree_worktree__head(void)
+{
+	git_reference *ref, *head;
+
+	cl_git_pass(git_reference_lookup(&ref, fixture.repo, "refs/heads/testrepo-worktree"));
+	cl_git_pass(git_worktree_head(&head, fixture.repo, "testrepo-worktree"));
+	cl_assert(git_reference_cmp(ref, head) == 0);
+
+	git_reference_free(ref);
+	git_reference_free(head);
+}
+
+void test_worktree_worktree__head_detached(void)
+{
+	git_reference *ref, *head;
+
+	cl_git_pass(git_reference_lookup(&ref, fixture.repo, "refs/heads/testrepo-worktree"));
+	cl_git_pass(git_repository_set_head_detached(fixture.worktree, &ref->target.oid));
+
+	cl_assert(git_repository_head_detached(fixture.worktree));
+	cl_assert(git_worktree_head_detached(fixture.repo, "testrepo-worktree"));
+	cl_git_fail(git_worktree_head(&head, fixture.repo, "testrepo-worktree"));
+
+	git_reference_free(ref);
 }
 
 void test_worktree_worktree__lock_with_reason(void)
