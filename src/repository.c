@@ -27,6 +27,7 @@
 #include "merge.h"
 #include "diff_driver.h"
 #include "annotated_commit.h"
+#include "worktree.h"
 
 #ifdef GIT_WIN32
 # include "win32/w32_util.h"
@@ -2144,6 +2145,13 @@ int git_repository_set_head(
 	error = git_reference_lookup(&ref, repo, refname);
 	if (error < 0 && error != GIT_ENOTFOUND)
 		goto cleanup;
+
+	if (ref && current->type == GIT_REF_SYMBOLIC && git__strcmp(current->target.symbolic, ref->name)
+		&& git_reference_is_branch(ref) && git_branch_is_checked_out(ref))
+	{
+		error = -1;
+		goto cleanup;
+	}
 
 	if (!error) {
 		if (git_reference_is_branch(ref)) {
