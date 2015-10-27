@@ -90,6 +90,31 @@ GIT_EXTERN(int) git_worktree_validate(const git_worktree *wt);
 GIT_EXTERN(int) git_worktree_init(git_worktree **out, git_repository *repo, const char *name, const char *path);
 
 /*
+ * Check if a worktree's HEAD is detached
+ *
+ * A worktree's HEAD is detached when it points directly to a
+ * commit instead of a branch.
+ *
+ * @param repo a repository object
+ * @param name name of the worktree to retrieve HEAD for
+ * @return 1 if HEAD is detached, 0 if its not; error code if
+ *  there was an error
+ */
+GIT_EXTERN(int) git_worktree_head_detached(git_repository *repo, const char *name);
+
+/**
+ * Retrieve the referenced HEAD for the worktree
+ *
+ * @param out pointer to the reference which will be retrieved
+ * @param repo a repository object
+ * @param name name of the worktree to retrieve HEAD for
+ * @return 0 when successful, error-code otherwise
+ */
+GIT_EXTERN(int) git_worktree_head(git_reference **out,
+	git_repository *repo,
+	const char *name);
+
+/**
  * Lock worktree if not already locked
  *
  * Lock a worktree, optionally specifying a reason why the linked
