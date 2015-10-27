@@ -28,6 +28,7 @@
 #include "diff_driver.h"
 #include "annotated_commit.h"
 #include "submodule.h"
+#include "worktree.h"
 
 GIT__USE_STRMAP
 #include "strmap.h"
@@ -2408,6 +2409,13 @@ int git_repository_set_head(
 	error = git_reference_lookup(&ref, repo, refname);
 	if (error < 0 && error != GIT_ENOTFOUND)
 		goto cleanup;
+
+	if (ref && current->type == GIT_REF_SYMBOLIC && git__strcmp(current->target.symbolic, ref->name)
+		&& git_reference_is_branch(ref) && git_branch_is_checked_out(ref))
+	{
+		error = -1;
+		goto cleanup;
+	}
 
 	if (!error) {
 		if (git_reference_is_branch(ref)) {
