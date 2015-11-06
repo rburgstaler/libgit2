@@ -66,3 +66,14 @@ void test_worktree_refs__read_head(void)
 
 	git_reference_free(head);
 }
+
+void test_worktree_refs__delete_fails_for_checked_out_branch(void)
+{
+       git_reference *branch;
+
+       cl_git_pass(git_branch_lookup(&branch, fixture.repo,
+               "testrepo-worktree", GIT_BRANCH_LOCAL));
+       cl_git_fail(git_branch_delete(branch));
+
+       git_reference_free(branch);
+}
