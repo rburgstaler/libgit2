@@ -356,11 +356,28 @@ GIT_EXTERN(int) git_repository_is_empty(git_repository *repo);
  *
  * This is the path of the `.git` folder for normal repositories,
  * or of the repository itself for bare repositories.
+ * In the case of a linked working tree, this is the path to the 
+ * private directory under `.git/worktrees/` direcotry in the
+ * main working tree.
  *
  * @param repo A repository object
  * @return the path to the repository
  */
 GIT_EXTERN(const char *) git_repository_path(git_repository *repo);
+
+/**
+* Get the path of this repository's common directory
+*
+* This is the path of the `.git` folder for normal repositories,
+* or of the repository itself for bare repositories.
+* In the case of a linked working tree, this is the path back to the 
+* main working tree’s `.git` folder.
+*
+* @param repo A repository object
+* @return the path to the commondir of the repository
+*/
+GIT_EXTERN(const char *) git_repository_commondir(git_repository *repo);
+
 
 /**
  * Get the path of the working directory for this repository

@@ -1863,6 +1863,12 @@ const char *git_repository_path(git_repository *repo)
 	return repo->path_repository;
 }
 
+const char *git_repository_commondir(git_repository *repo)
+{
+	assert(repo);
+	return repo->commondir;
+}
+
 const char *git_repository_workdir(git_repository *repo)
 {
 	assert(repo);
