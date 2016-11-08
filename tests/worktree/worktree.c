@@ -1,5 +1,6 @@
 #include "clar_libgit2.h"
 #include "worktree_helpers.h"
+#include "submodule/submodule_helpers.h"
 
 #include "checkout.h"
 #include "repository.h"
@@ -287,6 +288,33 @@ void test_worktree_worktree__init_existing_path(void)
 	}
 
 	git_buf_free(&path);
+}
+
+void test_worktree_worktree__init_submodule(void)
+{
+	git_repository *repo, *sm, *wt;
+	git_worktree *worktree;
+	git_buf path = GIT_BUF_INIT;
+
+	cleanup_fixture_worktree(&fixture);
+	repo = setup_fixture_submod2();
+
+	cl_git_pass(git_buf_joinpath(&path, repo->workdir, "sm_unchanged"));
+	cl_git_pass(git_repository_open(&sm, path.ptr));
+	cl_git_pass(git_buf_joinpath(&path, repo->workdir, "../worktree"));
+	cl_git_pass(git_worktree_init(&worktree, sm, "repo-worktree", path.ptr));
+	cl_git_pass(git_worktree_open(&wt, worktree));
+
+	cl_assert(git_path_equal(path.ptr, wt->workdir));
+	cl_assert(git_path_equal(sm->commondir, wt->commondir));
+
+	cl_git_pass(git_buf_joinpath(&path, sm->gitdir, "worktrees/repo-worktree"));
+	cl_assert(git_path_equal(path.ptr, wt->gitdir));
+
+	git_buf_free(&path);
+	git_worktree_free(worktree);
+	git_repository_free(sm);
+	git_repository_free(wt);
 }
 
 void test_worktree_worktree__validate(void)
